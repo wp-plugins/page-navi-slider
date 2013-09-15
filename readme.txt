@@ -1,4 +1,4 @@
-=== Page navi slider ===
+=== ===
 Contributors : Iznogood1
 Tags: navigation, pagination, paging, pages, jQuery, jQuery ui, slider, responsive, touch
 Requires at least: 3.6
