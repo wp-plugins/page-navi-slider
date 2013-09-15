@@ -22,7 +22,7 @@ This plugin generates cool pagination links
 
 * Easy to customize with its setting page
 * See what you get thanks to its preview feature
-* Actally responsive as it displays a slider if the page numbers exceeds the available width
+* Actually responsive as it displays a slider if the page numbers exceeds the available width
 * Touchscreens compliant
 * Caption ready to localize for multilingual sites
 
@@ -98,16 +98,19 @@ The action can be hooked at the get_footer event or at the wp-footer event.
 
 If the first case, the plugin is displayed at the top of the footer.
 
-If the second, the plugin is dispplayed at the end top of the footer.
+If the second, the plugin is displayed at the end top of the footer.
 
-Note that Wordpress recommands plugin not to echo with theses actions !
+Note that Wordpress recommends plugins not to echo with theses actions !
 
 == Screenshots ==
 
-1. Admin menu
-2. Standard settings
-3. Circles
-4. Grandient background
+1. Standard settings
+2. Rounded pages
+3. Gradient background
+4. Settings page
+5. Preview customization to really see what you ill get
+6. Easy color selection
+7. Step by step font definition
 
 
 == Changelog ==
