@@ -1,9 +1,9 @@
 === Page navi slider ===
 Contributors : Iznogood1
 Tags: navigation, pagination, paging, pages, jQuery, jQuery ui, slider, responsive, touch
-Requires at least: 3.6
-Tested up to: 3.6
-Stable tag: 3.6
+Requires at least: 2.7
+Tested up to: 3.6.1
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -112,11 +112,19 @@ Note that Wordpress recommends plugins not to echo with theses actions !
 6. Easy color selection
 7. Step by step font definition
 
-
 == Changelog ==
 
+= 1.0.1 =
+* Updated version as the initial release was not the actual one !
+* Tested with WP 3.6.1
+
 = 1.0 =
-* Fisrt release
+* Initial release - Unfortunately I made a mistake when importing the files !
+
+== Upgrade Notice ==
+
+= 1.0.1 =
+Just upgrade and check your settings (page numbers width can now be set up).
 
 == CSS ==
 
