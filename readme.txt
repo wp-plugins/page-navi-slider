@@ -108,7 +108,7 @@ Note that Wordpress recommends plugins not to echo with theses actions !
 2. Rounded pages
 3. Gradient background
 4. Settings page
-5. Preview customization to really see what you ill get
+5. Preview customization to really see what you will get
 6. Easy color selection
 7. Step by step font definition
 
