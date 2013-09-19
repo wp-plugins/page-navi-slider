@@ -128,11 +128,9 @@ Of course change `your_file.ext` to the actual file name.
 * Settings can be reverted
 * Code optimization
 
-= 1.0.2 =
-* Japanese language file added - Thanks to stranger-jp.
-
 = 1.0.1 =
 * Updated version as the initial release was not the actual one !
+* Japanese language file added - Thanks to stranger-jp.
 * Tested with WP 3.6.1
 
 = 1.0 =
