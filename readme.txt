@@ -138,9 +138,11 @@ Of course change `your_file.ext` to the actual file name.
 
 == Upgrade Notice ==
 
-= 1.0.2 =
-* Download and install.
-* Check you settings as they are deleted when the plugin is uninstalled.
+= 1.1 =
+* DEACTIVATE previous version in order to keep your settings.
+* Download, install and reactivate.
+* Unfortunately, some settings are losts ! Check fonts and colors.
+This will be improved in the next release.
 
 = 1.0.1 =
 Just upgrade and check your settings (page numbers width can now be set up).
