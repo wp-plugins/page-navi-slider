@@ -128,6 +128,10 @@ Of course change `your_file.ext` to the actual file name.
 * Settings can be reverted
 * Code optimization
 
+DEACTIVATE previous version in order to keep your settings.
+
+Unfortunately, some settings are losts ! Check fonts and colors.This will be improved in the next release.
+
 = 1.0.1 =
 * Updated version as the initial release was not the actual one !
 * Japanese language file added - Thanks to stranger-jp.
