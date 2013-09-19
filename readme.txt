@@ -22,7 +22,7 @@ This plugin generates cool pagination links
 
 * Easy to customize with its setting page
 * See what you get thanks to its preview feature
-* Actually responsive as it displays a slider if the page numbers exceeds the available width
+* Actually responsive as it displays a slider if the page numbers exceed the available width
 * Touchscreens compliant
 * Caption ready to localize for multilingual sites
 
@@ -107,9 +107,9 @@ Note that Wordpress recommends plugins not to echo with theses actions !
 1. Save your icons files in /wp-content/plugins/page-navi-slider/style
 
 2. In the settings, set the background colors (for page and/or current and/or on hover) to
-url('your_file.ext')
+`url('your_file.ext')`
 
-Of course change your_file.ext the actual file name.
+Of course change `your_file.ext` to the actual file name.
 
 == Screenshots ==
 
