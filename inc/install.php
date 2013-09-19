@@ -51,7 +51,6 @@ function wpns_install(){
 	global $default_settings;
 	$new_settings = array_intersect(get_option('wpns_settings',$default_settings), $default_settings) + $default_settings;
 	update_option('wpns_settings', $new_settings);
-	$new_settings = array_intersect(get_option('wpns_settings_preview',$default_settings), $default_settings) + $default_settings;
 	update_option('wpns_settings_preview', $new_settings);
 }
 
