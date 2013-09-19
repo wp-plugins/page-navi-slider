@@ -6,11 +6,10 @@
 <?php	else: ?>
 	<div style="border : 1px dotted #C4C4C4; background-color : <?php echo $this->_options['wpns_preview_background_color']; ?>"><i> <?php _e('Your page','page-navi-slider'); ?></i>
 		<?php
-			$settings = get_option('wpns_settings');
-			for ($i = 0; $i < $settings['wpns_preview_pages']; $i++){
+			for ($i = 0; $i < $this->_options['wpns_preview_pages']; $i++){
 				$pagination[$i]='<a class="page-numbers" href="#">'.($i+1).'</a>';
 			}
-			wpns_frontend($settings['wpns_preview_current'],$settings['wpns_preview_pages'],$pagination,$settings,true);
+			wpns_frontend($this->_options['wpns_preview_current'],$this->_options['wpns_preview_pages'],$pagination,$this->_options,true);
 		?>
 		<i><?php _e('rest of your page...','page-navi-slider'); ?></i>
 	</div>

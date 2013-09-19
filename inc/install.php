@@ -1,9 +1,8 @@
 <?php 
 global $default_settings;
 $default_settings=array(
-		//version_compar
-		'wpns_version'=>'1.0',
 		//Preview
+		'wpns_revert_disabled'=>'disabled',
 		'wpns_preview_background_color'=>'#E6E6E6',
 		'wpns_preview_pages'=>'25',
 		'wpns_preview_current'=>'5',
@@ -50,11 +49,15 @@ $default_settings=array(
 
 function wpns_install(){
 	global $default_settings;
-	add_option('wpns_settings',$default_settings);
+	$new_settings = array_intersect(get_option('wpns_settings',$default_settings), $default_settings) + $default_settings;
+	update_option('wpns_settings', $new_settings);
+	$new_settings = array_intersect(get_option('wpns_settings_preview',$default_settings), $default_settings) + $default_settings;
+	update_option('wpns_settings_preview', $new_settings);
 }
 
 function wpns_uninstall(){
 	delete_option('wpns_settings');
+	delete_option('wpns_settings_preview');
 	wpns_remove_auto_display();
 }
 

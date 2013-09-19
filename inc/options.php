@@ -10,7 +10,8 @@ class WPNS_SETTING_PAGE{
 	public function __construct($default_settings){
 		add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
     add_action( 'admin_init', array( $this, 'page_init' ) );
-		$this->_default_settings = $default_settings;
+		$this->_default_settings = $default_settings;  
+		$this->_options = get_option( 'wpns_settings_preview' );	
   }
 
   //Add options page
@@ -34,29 +35,33 @@ class WPNS_SETTING_PAGE{
 
   //Options page callback
   public function create_admin_page(){
-  $this->_options = get_option( 'wpns_settings' );	
-	wpns_install();
+
 	?>
 
 	<div class="wrap">
 		<?php screen_icon(); ?>
-		<h2>Page navi slider</h2> 
-		<div style="max-width : 50em;">
+		<h2>Page navi slider <span style="font-size:small"><?php echo wpns_version(); ?></span></h2> 
+		
+		<div class="wpns_settings_page">
     <h3><?php _e('Preview','page-navi-slider');?></h3> 	
 		<?php require_once(dirname( __FILE__ ) . '/preview.php'); ?>
 		<h3><?php _e('Settings','page-navi-slider');?></h3> 
 		
     <form method="post" action="options.php">
+			<table class="wpns_setting_buttons"><tr>
+				<td><?php submit_button(__('Preview','page-navi-slider'),'reset','preview'); ?></td>
+				<td><?php submit_button(__('Revert','page-navi-slider'),'reset','revert',true, $this->_options['wpns_revert_disabled'] ); ?></td>
+				<td><?php submit_button(__('Save changes','page-navi-slider'),'primary','submit',true,$this->_options['wpns_revert_disabled']); ?>
+				</td>
+				<td><?php submit_button(__('Reset to default','page-navi-slider'),'reset','reset'); ?>
+				</td>
+			</tr></table>
 			<?php
 				echo '<div id="wpns_accordion">';
-				settings_fields( 'wpns_option_group' );
+				settings_fields( 'wpns_settings_preview' );
 				$this->wpns_do_settings_sections( 'wpns_settings_admin' );
 				echo '</div>';
 			?>
-			<table><tr>
-			<td><?php submit_button(); ?></td>
-			<td><?php submit_button(__('Reset to default','page-navi-slider'),'reset','reset_clicked'); ?></td>
-			</tr></table>
 		</form>
 		</div>
 	</div>
@@ -86,10 +91,9 @@ class WPNS_SETTING_PAGE{
 		}
 	}
 	
-
 	//Register and add settings
 	public function page_init(){        
-		register_setting('wpns_option_group','wpns_settings', array( $this, 'sanitize' ));
+		register_setting('wpns_settings_preview','wpns_settings_preview', array( $this, 'sanitize' ));
 		//sections
 		add_settings_section('wpns_preview_section',__('Preview options','page-navi-slider'), array( $this, 'print_preview_info' ), 'wpns_settings_admin');
 		add_settings_section('wpns_general_section',__('General settings','page-navi-slider'), array( $this, 'print_general_info' ), 'wpns_settings_admin');
@@ -166,8 +170,27 @@ class WPNS_SETTING_PAGE{
 		if($input['wpns_hover_font_lineheight']==''){$input['wpns_hover_font_lineheight']='1em';}
 		if($input['wpns_hover_font_family']==''){$input['wpns_hover_font_family']='Arial,Helvetica,Sans-Serif';}
 		$input['wpns_hover_font']=$input['wpns_hover_font_style'].' '.$input['wpns_hover_font_variant'].' '.$input['wpns_hover_font_weight'].' '.$input['wpns_hover_font_size'].'/'.$input['wpns_hover_font_lineheight'].' '.$input['wpns_hover_font_family'];	
-
-		if (isset($_POST['reset_clicked'])){$input=$this->_default_settings;}
+		
+		if (isset($_POST['preview'])){
+			add_settings_error('', 'wpns_setting_message', _('PREVIEW ONLY - Click on &laquo;Save changes&raquo; to apply settings.','page-navi-slider'), 'error');
+			$input['wpns_revert_disabled']='';
+		}
+		if (isset($_POST['revert'])){
+			add_settings_error('', 'wpns_setting_message', _('Former settings loaded.','page-navi-slider'), 'updated');
+			$input=$this->_default_settings;
+			$input=get_option('wpns_settings',$input);
+			$input['wpns_revert_disabled']='disabled';
+		}
+		if (isset($_POST['submit'])){
+			add_settings_error('', 'wpns_setting_message', _('Settings saved.','page-navi-slider'), 'updated');
+			$input['wpns_revert_disabled']='disabled';
+			update_option('wpns_settings',$input);
+		}
+		if (isset($_POST['reset'])){
+			add_settings_error('', 'wpns_setting_message', _('Default settings loaded - PREVIEW ONLY - Click on &laquo;Save changes&raquo; to apply settings.','page-navi-slider'), 'error');
+			$input=$this->_default_settings;
+			$input['wpns_revert_disabled']='';
+		}
 		return $input;
 	}
 
@@ -246,34 +269,34 @@ class WPNS_SETTING_PAGE{
 	//Get the settings option array and print one of its values
 	//Preview	
 	public function wpns_preview_background_color_callback(){
-		printf('<input type="text" class="color {hash:true, adjust:false, required:false}" id="wpns_preview_background_color" name="wpns_settings[wpns_preview_background_color]" value="%s" />',esc_attr( $this->_options['wpns_preview_background_color']));
+		printf('<input type="text" class="color {hash:true, adjust:false, required:false}" id="wpns_preview_background_color" name="wpns_settings_preview[wpns_preview_background_color]" value="%s" />',esc_attr( $this->_options['wpns_preview_background_color']));
 	}
-	public function wpns_preview_pages_callback(){printf('<input type="text" id="wpns_preview_pages" name="wpns_settings[wpns_preview_pages]" value="%s" />',esc_attr( $this->_options['wpns_preview_pages']));}
-	public function wpns_preview_current_callback(){printf('<input type="text" id="wpns_preview_current" name="wpns_settings[wpns_preview_current]" value="%s" />',esc_attr( $this->_options['wpns_preview_current']));}
+	public function wpns_preview_pages_callback(){printf('<input type="text" id="wpns_preview_pages" name="wpns_settings_preview[wpns_preview_pages]" value="%s" />',esc_attr( $this->_options['wpns_preview_pages']));}
+	public function wpns_preview_current_callback(){printf('<input type="text" id="wpns_preview_current" name="wpns_settings_preview[wpns_preview_current]" value="%s" />',esc_attr( $this->_options['wpns_preview_current']));}
 	//General	
-	public function wpns_margin_callback(){printf('<input type="text" id="wpns_margin" name="wpns_settings[wpns_margin]" value="%s" />',esc_attr( $this->_options['wpns_margin']));}
-	public function wpns_padding_callback(){printf('<input type="text" id="wpns_padding" name="wpns_settings[wpns_padding]" value="%s" />',esc_attr( $this->_options['wpns_padding']));}
-	public function wpns_display_if_one_page_callback(){printf('<input type="checkbox" id="wpns_display_if_one_page" name="wpns_settings[wpns_display_if_one_page]" value="1"' . checked( 1,$this->_options['wpns_display_if_one_page'],false) . '/>',esc_attr( $this->_options['wpns_display_if_one_page']));}
+	public function wpns_margin_callback(){printf('<input type="text" id="wpns_margin" name="wpns_settings_preview[wpns_margin]" value="%s" />',esc_attr( $this->_options['wpns_margin']));}
+	public function wpns_padding_callback(){printf('<input type="text" id="wpns_padding" name="wpns_settings_preview[wpns_padding]" value="%s" />',esc_attr( $this->_options['wpns_padding']));}
+	public function wpns_display_if_one_page_callback(){printf('<input type="checkbox" id="wpns_display_if_one_page" name="wpns_settings_preview[wpns_display_if_one_page]" value="1"' . checked( 1,$this->_options['wpns_display_if_one_page'],false) . '/>',esc_attr( $this->_options['wpns_display_if_one_page']));}
 	public function wpns_align_callback(){
-		printf('<select type="text" id="wpns_align" name="wpns_settings[wpns_align]" value="%s" />',esc_attr( $this->_options['wpns_align']));
+		printf('<select type="text" id="wpns_align" name="wpns_settings_preview[wpns_align]" value="%s" />',esc_attr( $this->_options['wpns_align']));
 		printf('<option value="left"'.selected( 'left',$this->_options['wpns_align'],false).'>left</option>');
 		printf('<option value="center"'.selected( 'center',$this->_options['wpns_align'],false).'>center</option>');
 		printf('<option value="right"'.selected( 'right',$this->_options['wpns_align'],false).'>right</option>');
 		printf('</select>');
 	}
-	public function wpns_pn_width_callback(){printf('<input type="text" id="wpns_pn_width" name="wpns_settings[wpns_pn_width]" value="%s" />',esc_attr( $this->_options['wpns_pn_width']));}
-	public function wpns_spacing_callback(){printf('<input type="text" id="wpns_spacing" name="wpns_settings[wpns_spacing]" value="%s" />',esc_attr( $this->_options['wpns_spacing']));}
-	public function wpns_show_total_callback(){printf('<input type="checkbox" id="wpns_show_total" name="wpns_settings[wpns_show_total]" value="1"' . checked( 1,$this->_options['wpns_show_total'],false) . '/>',esc_attr( $this->_options['wpns_show_total']));}
+	public function wpns_pn_width_callback(){printf('<input type="text" id="wpns_pn_width" name="wpns_settings_preview[wpns_pn_width]" value="%s" />',esc_attr( $this->_options['wpns_pn_width']));}
+	public function wpns_spacing_callback(){printf('<input type="text" id="wpns_spacing" name="wpns_settings_preview[wpns_spacing]" value="%s" />',esc_attr( $this->_options['wpns_spacing']));}
+	public function wpns_show_total_callback(){printf('<input type="checkbox" id="wpns_show_total" name="wpns_settings_preview[wpns_show_total]" value="1"' . checked( 1,$this->_options['wpns_show_total'],false) . '/>',esc_attr( $this->_options['wpns_show_total']));}
 	//Caption
-	public function wpns_caption_text_callback(){printf('<input style="width : 100%%" type="text" id="wpns_caption_text" name="wpns_settings[wpns_caption_text]" value="%s" />',esc_attr( $this->_options['wpns_caption_text']));}
+	public function wpns_caption_text_callback(){printf('<input style="width : 100%%" type="text" id="wpns_caption_text" name="wpns_settings_preview[wpns_caption_text]" value="%s" />',esc_attr( $this->_options['wpns_caption_text']));}
 	public function wpns_caption_position_callback(){
-		printf('<select type="text" id="wpns_caption_position" name="wpns_settings[wpns_caption_position]" value="%s" />',esc_attr( $this->_options['wpns_caption_position']));
+		printf('<select type="text" id="wpns_caption_position" name="wpns_settings_preview[wpns_caption_position]" value="%s" />',esc_attr( $this->_options['wpns_caption_position']));
 		printf('<option value="top"'.selected( 'top',$this->_options['wpns_caption_position'],false).'>top</option>');
 		printf('<option value="bottom"'.selected( 'bottom',$this->_options['wpns_caption_position'],false).'>bottom</option>');
 		printf('</select>');
 	}
 	public function wpns_caption_alignment_callback(){
-		printf('<select type="text" id="wpns_caption_alignment" name="wpns_settings[wpns_caption_alignment]" value="%s" />',esc_attr( $this->_options['wpns_caption_alignment']));
+		printf('<select type="text" id="wpns_caption_alignment" name="wpns_settings_preview[wpns_caption_alignment]" value="%s" />',esc_attr( $this->_options['wpns_caption_alignment']));
 		printf('<option value="left"'.selected( 'left',$this->_options['wpns_caption_alignment'],false).'>left</option>');
 		printf('<option value="center"'.selected( 'center',$this->_options['wpns_caption_alignment'],false).'>center</option>');
 		printf('<option value="right"'.selected( 'right',$this->_options['wpns_caption_alignment'],false).'>right</option>');
@@ -283,123 +306,120 @@ class WPNS_SETTING_PAGE{
 	public function wpns_caption_font_callback(){
 		$tab=explode(' ', $this->_options['wpns_caption_font']);
 		$tab2=explode('/', $tab[3]);
-		printf('<select style="width : 6em" type="text" id="wpns_caption_font_style" name="wpns_settings[wpns_caption_font_style]" value="%s" />',esc_attr( $tab[0]));
+		printf('<select style="width : 6em" type="text" id="wpns_caption_font_style" name="wpns_settings_preview[wpns_caption_font_style]" value="%s" />',esc_attr( $tab[0]));
 		printf('<option value="normal"'.selected( 'normal',$tab[0],false).'>normal</option>');
 		printf('<option value="italic"'.selected( 'italic',$tab[0],false).'>italic</option>');
 		printf('<option value="oblique"'.selected( 'oblique',$tab[0],false).'>oblique</option>');
 		printf('</select>');
-		printf('<select style="width : 8em" type="text" id="wpns_caption_font_variant" name="wpns_settings[wpns_caption_font_variant]" value="%s" />',esc_attr( $tab[1]));
+		printf('<select style="width : 8em" type="text" id="wpns_caption_font_variant" name="wpns_settings_preview[wpns_caption_font_variant]" value="%s" />',esc_attr( $tab[1]));
 		printf('<option value="normal"'.selected( 'normal',$tab[1],false).'>normal</option>');
 		printf('<option value="small-caps"'.selected( 'small-caps',$tab[1],false).'>small-caps</option>');
 		printf('</select>');
-		printf('<select style="width : 6em" type="text" id="wpns_caption_font_weight" name="wpns_settings[wpns_caption_font_weight]" value="%s" />',esc_attr( $tab[2]));
+		printf('<select style="width : 6em" type="text" id="wpns_caption_font_weight" name="wpns_settings_preview[wpns_caption_font_weight]" value="%s" />',esc_attr( $tab[2]));
 		printf('<option value="normal"'.selected( 'normal',$tab[2],false).'>normal</option>');
 		printf('<option value="bold"'.selected( 'bold',$tab[2],false).'>bold</option>');
 		printf('<option value="bolder"'.selected( 'bolder',$tab[2],false).'>bolder</option>');
 		printf('<option value="lighter"'.selected( 'lighter',$tab[2],false).'>lighter</option>');
 		printf('<option value="inherit"'.selected( 'inherit',$tab[2],false).'>inherit</option>');
 		printf('</select><br/>');
-		printf('<input style="width : 6em; text-align : right;" type="text" id="wpns_caption_font_size" name="wpns_settings[wpns_caption_font_size]" value="%s" />',esc_attr($tab2[0]));
+		printf('<input style="width : 6em; text-align : right;" type="text" id="wpns_caption_font_size" name="wpns_settings_preview[wpns_caption_font_size]" value="%s" />',esc_attr($tab2[0]));
 		printf('/').
-		printf('<input style="width : 6em" type="text" id="wpns_caption_font_lineheight" name="wpns_settings[wpns_caption_font_lineheight]" value="%s" />',esc_attr($tab2[1]));
-		printf('<input style="width : 18em" type="text" id="wpns_caption_font_family" name="wpns_settings[wpns_caption_font_family]" value="%s" />',esc_attr($tab[4]));
+		printf('<input style="width : 6em" type="text" id="wpns_caption_font_lineheight" name="wpns_settings_preview[wpns_caption_font_lineheight]" value="%s" />',esc_attr($tab2[1]));
+		printf('<input style="width : 18em" type="text" id="wpns_caption_font_family" name="wpns_settings_preview[wpns_caption_font_family]" value="%s" />',esc_attr($tab[4]));
 	}
 	public function wpns_page_font_callback(){
-		//printf('<input style="width : 100%%" type="text" id="wpns_page_font" name="wpns_settings[wpns_page_font]" value="%s" />',esc_attr( $this->_options['wpns_page_font']));
 		$tab=explode(' ', $this->_options['wpns_page_font']);
 		$tab2=explode('/', $tab[3]);
-		printf('<select style="width : 6em" type="text" id="wpns_page_font_style" name="wpns_settings[wpns_page_font_style]" value="%s" />',esc_attr( $tab[0]));
+		printf('<select style="width : 6em" type="text" id="wpns_page_font_style" name="wpns_settings_preview[wpns_page_font_style]" value="%s" />',esc_attr( $tab[0]));
 		printf('<option value="normal"'.selected( 'normal',$tab[0],false).'>normal</option>');
 		printf('<option value="italic"'.selected( 'italic',$tab[0],false).'>italic</option>');
 		printf('<option value="oblique"'.selected( 'oblique',$tab[0],false).'>oblique</option>');
 		printf('</select>');
-		printf('<select style="width : 8em" type="text" id="wpns_page_font_variant" name="wpns_settings[wpns_page_font_variant]" value="%s" />',esc_attr( $tab[1]));
+		printf('<select style="width : 8em" type="text" id="wpns_page_font_variant" name="wpns_settings_preview[wpns_page_font_variant]" value="%s" />',esc_attr( $tab[1]));
 		printf('<option value="normal"'.selected( 'normal',$tab[1],false).'>normal</option>');
 		printf('<option value="small-caps"'.selected( 'small-caps',$tab[1],false).'>small-caps</option>');
 		printf('</select>');
-		printf('<select style="width : 6em" type="text" id="wpns_page_font_weight" name="wpns_settings[wpns_page_font_weight]" value="%s" />',esc_attr( $tab[2]));
+		printf('<select style="width : 6em" type="text" id="wpns_page_font_weight" name="wpns_settings_preview[wpns_page_font_weight]" value="%s" />',esc_attr( $tab[2]));
 		printf('<option value="normal"'.selected( 'normal',$tab[2],false).'>normal</option>');
 		printf('<option value="bold"'.selected( 'bold',$tab[2],false).'>bold</option>');
 		printf('<option value="bolder"'.selected( 'bolder',$tab[2],false).'>bolder</option>');
 		printf('<option value="lighter"'.selected( 'lighter',$tab[2],false).'>lighter</option>');
 		printf('<option value="inherit"'.selected( 'inherit',$tab[2],false).'>inherit</option>');
 		printf('</select><br/>');
-		printf('<input style="width : 6em; text-align : right;" type="text" id="wpns_page_font_size" name="wpns_settings[wpns_page_font_size]" value="%s" />',esc_attr($tab2[0]));
+		printf('<input style="width : 6em; text-align : right;" type="text" id="wpns_page_font_size" name="wpns_settings_preview[wpns_page_font_size]" value="%s" />',esc_attr($tab2[0]));
 		printf('/').
-		printf('<input style="width : 6em" type="text" id="wpns_page_font_lineheight" name="wpns_settings[wpns_page_font_lineheight]" value="%s" />',esc_attr($tab2[1]));
-		printf('<input style="width : 18em" type="text" id="wpns_page_font_family" name="wpns_settings[wpns_page_font_family]" value="%s" />',esc_attr($tab[4]));	
+		printf('<input style="width : 6em" type="text" id="wpns_page_font_lineheight" name="wpns_settings_preview[wpns_page_font_lineheight]" value="%s" />',esc_attr($tab2[1]));
+		printf('<input style="width : 18em" type="text" id="wpns_page_font_family" name="wpns_settings_preview[wpns_page_font_family]" value="%s" />',esc_attr($tab[4]));	
 	}
 	public function wpns_current_font_callback(){
-		//printf('<input style="width : 100%%" type="text" id="wpns_current_font" name="wpns_settings[wpns_current_font]" value="%s" />',esc_attr( $this->_options['wpns_current_font']));
 		$tab=explode(' ', $this->_options['wpns_current_font']);
 		$tab2=explode('/', $tab[3]);
-		printf('<select style="width : 6em" type="text" id="wpns_current_font_style" name="wpns_settings[wpns_current_font_style]" value="%s" />',esc_attr( $tab[0]));
+		printf('<select style="width : 6em" type="text" id="wpns_current_font_style" name="wpns_settings_preview[wpns_current_font_style]" value="%s" />',esc_attr( $tab[0]));
 		printf('<option value="normal"'.selected( 'normal',$tab[0],false).'>normal</option>');
 		printf('<option value="italic"'.selected( 'italic',$tab[0],false).'>italic</option>');
 		printf('<option value="oblique"'.selected( 'oblique',$tab[0],false).'>oblique</option>');
 		printf('</select>');
-		printf('<select style="width : 8em" type="text" id="wpns_current_font_variant" name="wpns_settings[wpns_current_font_variant]" value="%s" />',esc_attr( $tab[1]));
+		printf('<select style="width : 8em" type="text" id="wpns_current_font_variant" name="wpns_settings_preview[wpns_current_font_variant]" value="%s" />',esc_attr( $tab[1]));
 		printf('<option value="normal"'.selected( 'normal',$tab[1],false).'>normal</option>');
 		printf('<option value="small-caps"'.selected( 'small-caps',$tab[1],false).'>small-caps</option>');
 		printf('</select>');
-		printf('<select style="width : 6em" type="text" id="wpns_current_font_weight" name="wpns_settings[wpns_current_font_weight]" value="%s" />',esc_attr( $tab[2]));
+		printf('<select style="width : 6em" type="text" id="wpns_current_font_weight" name="wpns_settings_preview[wpns_current_font_weight]" value="%s" />',esc_attr( $tab[2]));
 		printf('<option value="normal"'.selected( 'normal',$tab[2],false).'>normal</option>');
 		printf('<option value="bold"'.selected( 'bold',$tab[2],false).'>bold</option>');
 		printf('<option value="bolder"'.selected( 'bolder',$tab[2],false).'>bolder</option>');
 		printf('<option value="lighter"'.selected( 'lighter',$tab[2],false).'>lighter</option>');
 		printf('<option value="inherit"'.selected( 'inherit',$tab[2],false).'>inherit</option>');
 		printf('</select><br/>');
-		printf('<input style="width : 6em; text-align : right;" type="text" id="wpns_current_font_size" name="wpns_settings[wpns_current_font_size]" value="%s" />',esc_attr($tab2[0]));
+		printf('<input style="width : 6em; text-align : right;" type="text" id="wpns_current_font_size" name="wpns_settings_preview[wpns_current_font_size]" value="%s" />',esc_attr($tab2[0]));
 		printf('/').
-		printf('<input style="width : 6em" type="text" id="wpns_current_font_lineheight" name="wpns_settings[wpns_current_font_lineheight]" value="%s" />',esc_attr($tab2[1]));
-		printf('<input style="width : 18em" type="text" id="wpns_current_font_family" name="wpns_settings[wpns_current_font_family]" value="%s" />',esc_attr($tab[4]));	
+		printf('<input style="width : 6em" type="text" id="wpns_current_font_lineheight" name="wpns_settings_preview[wpns_current_font_lineheight]" value="%s" />',esc_attr($tab2[1]));
+		printf('<input style="width : 18em" type="text" id="wpns_current_font_family" name="wpns_settings_preview[wpns_current_font_family]" value="%s" />',esc_attr($tab[4]));	
 		}
 	public function wpns_hover_font_callback(){
-	//printf('<input style="width : 100%%" type="text" id="wpns_hover_font" name="wpns_settings[wpns_hover_font]" value="%s" />',esc_attr( $this->_options['wpns_hover_font']));
 		$tab=explode(' ', $this->_options['wpns_hover_font']);
 		$tab2=explode('/', $tab[3]);
-		printf('<select style="width : 6em" type="text" id="wpns_hover_font_style" name="wpns_settings[wpns_hover_font_style]" value="%s" />',esc_attr( $tab[0]));
+		printf('<select style="width : 6em" type="text" id="wpns_hover_font_style" name="wpns_settings_preview[wpns_hover_font_style]" value="%s" />',esc_attr( $tab[0]));
 		printf('<option value="normal"'.selected( 'normal',$tab[0],false).'>normal</option>');
 		printf('<option value="italic"'.selected( 'italic',$tab[0],false).'>italic</option>');
 		printf('<option value="oblique"'.selected( 'oblique',$tab[0],false).'>oblique</option>');
 		printf('</select>');
-		printf('<select style="width : 8em" type="text" id="wpns_hover_font_variant" name="wpns_settings[wpns_hover_font_variant]" value="%s" />',esc_attr( $tab[1]));
+		printf('<select style="width : 8em" type="text" id="wpns_hover_font_variant" name="wpns_settings_preview[wpns_hover_font_variant]" value="%s" />',esc_attr( $tab[1]));
 		printf('<option value="normal"'.selected( 'normal',$tab[1],false).'>normal</option>');
 		printf('<option value="small-caps"'.selected( 'small-caps',$tab[1],false).'>small-caps</option>');
 		printf('</select>');
-		printf('<select style="width : 6em" type="text" id="wpns_hover_font_weight" name="wpns_settings[wpns_hover_font_weight]" value="%s" />',esc_attr( $tab[2]));
+		printf('<select style="width : 6em" type="text" id="wpns_hover_font_weight" name="wpns_settings_preview[wpns_hover_font_weight]" value="%s" />',esc_attr( $tab[2]));
 		printf('<option value="normal"'.selected( 'normal',$tab[2],false).'>normal</option>');
 		printf('<option value="bold"'.selected( 'bold',$tab[2],false).'>bold</option>');
 		printf('<option value="bolder"'.selected( 'bolder',$tab[2],false).'>bolder</option>');
 		printf('<option value="lighter"'.selected( 'lighter',$tab[2],false).'>lighter</option>');
 		printf('<option value="inherit"'.selected( 'inherit',$tab[2],false).'>inherit</option>');
 		printf('</select><br/>');
-		printf('<input style="width : 6em; text-align : right;" type="text" id="wpns_hover_font_size" name="wpns_settings[wpns_hover_font_size]" value="%s" />',esc_attr($tab2[0]));
+		printf('<input style="width : 6em; text-align : right;" type="text" id="wpns_hover_font_size" name="wpns_settings_preview[wpns_hover_font_size]" value="%s" />',esc_attr($tab2[0]));
 		printf('/').
-		printf('<input style="width : 6em" type="text" id="wpns_hover_font_lineheight" name="wpns_settings[wpns_hover_font_lineheight]" value="%s" />',esc_attr($tab2[1]));
-		printf('<input style="width : 18em" type="text" id="wpns_hover_font_family" name="wpns_settings[wpns_hover_font_family]" value="%s" />',esc_attr($tab[4]));	
+		printf('<input style="width : 6em" type="text" id="wpns_hover_font_lineheight" name="wpns_settings_preview[wpns_hover_font_lineheight]" value="%s" />',esc_attr($tab2[1]));
+		printf('<input style="width : 18em" type="text" id="wpns_hover_font_family" name="wpns_settings_preview[wpns_hover_font_family]" value="%s" />',esc_attr($tab[4]));	
 	}
 	//Colors
-	public function wpns_caption_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_caption_color" name="wpns_settings[wpns_caption_color]" value="%s" />',esc_attr( $this->_options['wpns_caption_color']));}
-	public function wpns_page_fore_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_page_fore_color" name="wpns_settings[wpns_page_fore_color]" value="%s" />',esc_attr( $this->_options['wpns_page_fore_color']));}
-	public function wpns_page_back_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_page_back_color" name="wpns_settings[wpns_page_back_color]" value="%s" />',esc_attr( $this->_options['wpns_page_back_color']));}
-	public function wpns_current_fore_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_current_fore_color" name="wpns_settings[wpns_current_fore_color]" value="%s" />',esc_attr( $this->_options['wpns_current_fore_color']));}
-	public function wpns_current_back_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_current_back_color" name="wpns_settings[wpns_current_back_color]" value="%s" />',esc_attr( $this->_options['wpns_current_back_color']));}
-	public function wpns_hover_fore_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_hover_fore_color" name="wpns_settings[wpns_hover_fore_color]" value="%s" />',esc_attr( $this->_options['wpns_hover_fore_color']));}
-	public function wpns_hover_back_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_hover_back_color" name="wpns_settings[wpns_hover_back_color]" value="%s" />',esc_attr( $this->_options['wpns_hover_back_color']));}
-	public function wpns_slider_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_slider_color" name="wpns_settings[wpns_slider_color]" value="%s" />',esc_attr( $this->_options['wpns_slider_color']));}
-	public function wpns_cursor_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_cursor_color" name="wpns_settings[wpns_cursor_color]" value="%s" />',esc_attr( $this->_options['wpns_cursor_color']));}
+	public function wpns_caption_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_caption_color" name="wpns_settings_preview[wpns_caption_color]" value="%s" />',esc_attr( $this->_options['wpns_caption_color']));}
+	public function wpns_page_fore_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_page_fore_color" name="wpns_settings_preview[wpns_page_fore_color]" value="%s" />',esc_attr( $this->_options['wpns_page_fore_color']));}
+	public function wpns_page_back_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_page_back_color" name="wpns_settings_preview[wpns_page_back_color]" value="%s" />',esc_attr( $this->_options['wpns_page_back_color']));}
+	public function wpns_current_fore_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_current_fore_color" name="wpns_settings_preview[wpns_current_fore_color]" value="%s" />',esc_attr( $this->_options['wpns_current_fore_color']));}
+	public function wpns_current_back_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_current_back_color" name="wpns_settings_preview[wpns_current_back_color]" value="%s" />',esc_attr( $this->_options['wpns_current_back_color']));}
+	public function wpns_hover_fore_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_hover_fore_color" name="wpns_settings_preview[wpns_hover_fore_color]" value="%s" />',esc_attr( $this->_options['wpns_hover_fore_color']));}
+	public function wpns_hover_back_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_hover_back_color" name="wpns_settings_preview[wpns_hover_back_color]" value="%s" />',esc_attr( $this->_options['wpns_hover_back_color']));}
+	public function wpns_slider_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_slider_color" name="wpns_settings_preview[wpns_slider_color]" value="%s" />',esc_attr( $this->_options['wpns_slider_color']));}
+	public function wpns_cursor_color_callback(){printf('<input style="width: 100%%" class="color {hash:true, adjust:false, required:false}" type="text" id="wpns_cursor_color" name="wpns_settings_preview[wpns_cursor_color]" value="%s" />',esc_attr( $this->_options['wpns_cursor_color']));}
 	//Borders
-	public function wpns_radius_callback(){printf('<input type="text" id="wpns_radius" name="wpns_settings[wpns_radius]" value="%s" />',esc_attr( $this->_options['wpns_radius']));}
-	public function wpns_page_border_callback(){printf('<input class="color {hash:true, adjust:true, required:false, borderstyle : true} type="text" id="wpns_page_border" name="wpns_settings[wpns_page_border]" value="%s" />',esc_attr( $this->_options['wpns_page_border']));}
-	public function wpns_current_border_callback(){printf('<input class="color {hash:true, adjust:true, required:false, borderstyle : true} type="text" id="wpns_current_border" name="wpns_settings[wpns_current_border]" value="%s" />',esc_attr( $this->_options['wpns_current_border']));}
-	public function wpns_hover_border_callback(){printf('<input class="color {hash:true, adjust:true, required:false, borderstyle : true} type="text" id="wpns_hover_border" name="wpns_settings[wpns_hover_border]" value="%s" />',esc_attr( $this->_options['wpns_hover_border']));}
-	public function wpns_slider_border_callback(){printf('<input class="color {hash:true, adjust:true, required:false, borderstyle : true} type="text" id="wpns_slider_border" name="wpns_settings[wpns_slider_border]" value="%s" />',esc_attr( $this->_options['wpns_slider_border']));}
-	public function wpns_cursor_border_callback(){printf('<input class="color {hash:true, adjust:true, required:false, borderstyle : true} type="text" id="wpns_cursor_border" name="wpns_settings[wpns_cursor_border]" value="%s" />',esc_attr( $this->_options['wpns_cursor_border']));}
+	public function wpns_radius_callback(){printf('<input type="text" id="wpns_radius" name="wpns_settings_preview[wpns_radius]" value="%s" />',esc_attr( $this->_options['wpns_radius']));}
+	public function wpns_page_border_callback(){printf('<input class="color {hash:true, adjust:true, required:false, borderstyle : true} type="text" id="wpns_page_border" name="wpns_settings_preview[wpns_page_border]" value="%s" />',esc_attr( $this->_options['wpns_page_border']));}
+	public function wpns_current_border_callback(){printf('<input class="color {hash:true, adjust:true, required:false, borderstyle : true} type="text" id="wpns_current_border" name="wpns_settings_preview[wpns_current_border]" value="%s" />',esc_attr( $this->_options['wpns_current_border']));}
+	public function wpns_hover_border_callback(){printf('<input class="color {hash:true, adjust:true, required:false, borderstyle : true} type="text" id="wpns_hover_border" name="wpns_settings_preview[wpns_hover_border]" value="%s" />',esc_attr( $this->_options['wpns_hover_border']));}
+	public function wpns_slider_border_callback(){printf('<input class="color {hash:true, adjust:true, required:false, borderstyle : true} type="text" id="wpns_slider_border" name="wpns_settings_preview[wpns_slider_border]" value="%s" />',esc_attr( $this->_options['wpns_slider_border']));}
+	public function wpns_cursor_border_callback(){printf('<input class="color {hash:true, adjust:true, required:false, borderstyle : true} type="text" id="wpns_cursor_border" name="wpns_settings_preview[wpns_cursor_border]" value="%s" />',esc_attr( $this->_options['wpns_cursor_border']));}
 	//Auto display
-	public function wpns_auto_display_callback(){printf('<input type="checkbox" id="wpns_auto_display" name="wpns_settings[wpns_auto_display]" value="1"' . checked( 1,$this->_options['wpns_auto_display'],false) . '/>',esc_attr( $this->_options['wpns_auto_display']));}
+	public function wpns_auto_display_callback(){printf('<input type="checkbox" id="wpns_auto_display" name="wpns_settings_preview[wpns_auto_display]" value="1"' . checked( 1,$this->_options['wpns_auto_display'],false) . '/>',esc_attr( $this->_options['wpns_auto_display']));}
 	public function wpns_auto_display_position_callback(){
-		printf('<select type="text" id="wpns_auto_display_position" name="wpns_settings[wpns_auto_display_position]" value="%s" />',esc_attr( $this->_options['wpns_auto_display_position']));
+		printf('<select type="text" id="wpns_auto_display_position" name="wpns_settings_preview[wpns_auto_display_position]" value="%s" />',esc_attr( $this->_options['wpns_auto_display_position']));
 		printf('<option value="footer top"'.selected( 'footer top',$this->_options['wpns_auto_display_position'],false).'>footer top</option>');
 		printf('<option value="footer bottom"'.selected( 'footer bottom',$this->_options['wpns_auto_display_position'],false).'>footer bottom</option>');
 		printf('</select>');
@@ -407,4 +427,6 @@ class WPNS_SETTING_PAGE{
 }
 
 if( is_admin() ) $wpns_settings_page = new WPNS_SETTING_PAGE($default_settings);
+
+
 ?>

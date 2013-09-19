@@ -4,7 +4,7 @@
 Plugin Name: Page navi slider
 Plugin URI: 
 Description: An advanced, fully customizable and actually responsive navigation plugin using jQuery slider 
-Version: 1.0.1
+Version: 1.1
 Author: Iznogood1
 Author URI:
 */
@@ -17,6 +17,12 @@ require_once(dirname( __FILE__ ) . '/inc/options.php');
 
 //Display the plugin
 require_once(dirname( __FILE__ ) . '/inc/frontend.php');
+
+//Version
+function wpns_version(){
+	$v=get_plugin_data(__File__);
+	return $v['Version'];
+}
 
 //Load style and JS
 function wpns_style_and_scripts() {
@@ -43,7 +49,6 @@ wpns_auto_display();
 //Main function
 function page_navi_slider(){
 	//Prepare pagination	
-	wpns_install();
 	global $wp_query, $wp_rewrite;
 	$wp_query->query_vars['paged'] > 1 ? $current = $wp_query->query_vars['paged'] : $current = 1;
 	$pagination = array(
@@ -62,8 +67,7 @@ function page_navi_slider(){
 		$pagination['add_args'] = array( 's' => str_replace( ' ' , '+', get_query_var( 's' ) ) );
 	
 	//Display the plugin
-	$settings = get_option('wpns_settings');
 	$page_links=paginate_links( $pagination );
-	wpns_frontend($current,$wp_query->max_num_pages,$page_links,$settings,false);
+	wpns_frontend($current,$wp_query->max_num_pages,$page_links,get_option('wpns_settings'),false);
 }
 ?>

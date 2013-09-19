@@ -34,7 +34,7 @@ msgid "General settings"
 msgstr "全般設定"
 
 msgid "Caption"
-msgstr "キャプション"
+msgstr "見出し"
 
 msgid "Fonts"
 msgstr "フォント"
@@ -49,7 +49,7 @@ msgid "Auto display"
 msgstr "自動表示"
 
 msgid "CAUTION !"
-msgstr "注意！"
+msgstr "注意!"
 
 msgid "Background color"
 msgstr "背景色"
@@ -106,7 +106,7 @@ msgid "Handle"
 msgstr "ハンドル"
 
 msgid "Radius <small>(<b>em</b>/px)</small>"
-msgstr "半径<small>(<b>em</b>/px)</small>"
+msgstr "半径(角丸)<small>(<b>em</b>/px)</small>"
 
 msgid "Cursor"
 msgstr "カーソル"
@@ -115,31 +115,31 @@ msgid "Display in footer"
 msgstr "フッターに表示"
 
 msgid "Location"
-msgstr "場所"
+msgstr "表示場所"
 
 msgid "These settins only affect the preview on that page; "
-msgstr "これらの設定は、そのページ上のプレビューに影響を与えます;"
+msgstr "これらの設定はページ上のプレビューに影響します;"
 
 msgid "they do not have any impact on the plugin itself."
 msgstr "プラグイン自体への影響はありません。"
 
 msgid "The dotted border is just for preview purpose and will not be displayed on your page."
-msgstr "点線の枠はプレビュー目的のためだけでページに表示されません。"
+msgstr "点線の枠はプレビュー時だけで実際のページには表示されません。"
 
 msgid "CSS shorthand; Syntax : font-weight font-style font-variant font-size line-height font-family."
-msgstr "CSSの構文 : font-weight font-style font-variant font-size line-height font-family."
+msgstr "CSSの速記; 構文 : font-weight font-style font-variant font-size line-height font-family."
 
 msgid "can be used and mixed."
-msgstr "が混在しても構いません。"
+msgstr " が混在しても構いません。"
 
 msgid "Use CSS shorthand for margin and padding; Syntax : top right bottom left."
-msgstr "margin と paddingを使用; 構文 : top right bottom left."
+msgstr "マージン と パディングの速記を使用; 構文 : top right bottom left."
 
 msgid "The slider is shown only if the number of pages exceeds the plugin widht."
-msgstr "スライダはページ数がプラグイン幅を超えた場合にのみ示されます。"
+msgstr "スライダーはページ数がプラグイン幅を超えた場合にのみ示されます。"
 
 msgid "Example : Set the margin to &laquo;1em 20% 0 20%&raquo;"
-msgstr "例:&laquo;1em 20% 0 20&raquoにマージンを設定します"
+msgstr "例 : &laquo;1em 20% 0 20&raquoでマージンを設定します"
 
 msgid "The plugin will use 60% of the available width and will apply a top margin of 1 em."
 msgstr "プラグインが使用可能な幅の60%を使用し、1emのマージンを適用します。"
@@ -154,19 +154,19 @@ msgid "Let empty to use the parent element color."
 msgstr "親要素の色を使用する場合は空白にします。"
 
 msgid "<b>transparent</b> allowed."
-msgstr "<b>透過</b>を可能にました。"
+msgstr "<b>透明 (transparent)</b>が使用可能です。"
 
 msgid "Use CSS shorthand; Syntax : thickness style color."
-msgstr "CSSを使用します。構文: thickness style color."
+msgstr "CSSの速記を使用; 構文: thickness style color."
 
 msgid "Let empty for no border."
-msgstr "境界線なしのための空ましょう。"
+msgstr "境界線なし場合は空にします。"
 
 msgid "Choosing a color will generate a 1 px border; can be modified later."
-msgstr "色を選択すると、1ピクセルの境界線を生成します。後で変更できます。"
+msgstr "色を選択すると、1ピクセルの境界線を生成します。これは後から変更できます。"
 
 msgid "<b>High radius</b> will occur in <b>surrounded</b> page nubers."
-msgstr "<b>高い半径</b>は<b>囲まれた</b>ページ番号に発生します。"
+msgstr "<b>角丸</b>はページ番号に適用します。"
 
 msgid "This feature depends on your theme and could return unexpected results."
 msgstr "この機能はテーマに依存しており予期しない結果を返す場合があります。"

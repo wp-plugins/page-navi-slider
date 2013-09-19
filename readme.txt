@@ -3,7 +3,7 @@ Contributors : Iznogood1
 Tags: pagenavi, navigation, pagination, paging, pages, jQuery, jQuery ui, slider, responsive, touch
 Requires at least: 2.7
 Tested up to: 3.6.1
-Stable tag: 1.0.1
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -22,7 +22,7 @@ This plugin generates cool pagination links
 
 * Easy to customize with its setting page
 * See what you get thanks to its preview feature
-* Actually responsive as it displays a slider if the page numbers exceeds the available width
+* Actually responsive as it displays a slider if the page numbers exceed the available width
 * Touchscreens compliant
 * Caption ready to localize for multilingual sites
 
@@ -102,6 +102,15 @@ If the second, the plugin is displayed at the end top of the footer.
 
 Note that Wordpress recommends plugins not to echo with theses actions !
 
+= How to use icons as page number background ? =
+
+1. Save your icons files in /wp-content/plugins/page-navi-slider/style
+
+2. In the settings, set the background colors (for page and/or current and/or on hover) to
+`url('your_file.ext')`
+
+Of course change `your_file.ext` to the actual file name.
+
 == Screenshots ==
 
 1. Standard settings
@@ -112,14 +121,12 @@ Note that Wordpress recommends plugins not to echo with theses actions !
 6. Easy color selection
 7. Step by step font definition
 
-
 == Changelog ==
 
-= 1.0 =
-* Fisrt release
-
-
-== Changelog ==
+= 1.1 =
+* Preview settings without apply them
+* Settings can be reverted
+* Code optimization
 
 = 1.0.2 =
 * Japanese language file added - Thanks to stranger-jp.
@@ -134,7 +141,8 @@ Note that Wordpress recommends plugins not to echo with theses actions !
 == Upgrade Notice ==
 
 = 1.0.2 =
-Nothing to do.
+* Download and install.
+* Check you settings as they are deleted when the plugin is uninstalled.
 
 = 1.0.1 =
 Just upgrade and check your settings (page numbers width can now be set up).
