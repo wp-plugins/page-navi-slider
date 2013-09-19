@@ -130,7 +130,7 @@ Of course change `your_file.ext` to the actual file name.
 
 DEACTIVATE previous version in order to keep your settings.
 
-Unfortunately, some settings are losts ! Check fonts and colors.This will be improved in the next release.
+Unfortunately, some settings are lost ! Check fonts and colors.This will be improved in the next release.
 
 = 1.0.1 =
 * Updated version as the initial release was not the actual one !
